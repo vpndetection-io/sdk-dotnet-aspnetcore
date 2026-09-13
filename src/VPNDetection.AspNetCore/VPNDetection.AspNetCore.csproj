@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- The compatibility floor, matching the base SDK: a net8.0 library loads on every later
+         runtime, and ASP.NET Core's own support line starts here. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>VPNDetection.AspNetCore</RootNamespace>
+    <AssemblyName>VPNDetection.AspNetCore</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>VPNDetection.AspNetCore</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Mslm Dev</Authors>
+    <Company>Mslm Dev</Company>
+    <Product>VPNDetection</Product>
+    <Description>The official ASP.NET Core middleware for the VPNDetection API. Classifies the visitor behind each request - VPN, residential proxy, Tor, hosting, CDN, relay - and puts the answer on HttpContext. Blocking is opt-in.</Description>
+    <PackageTags>vpn;proxy;tor;ip;aspnetcore;middleware;fraud;anonymity;vpndetection</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://vpndetection.io</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/vpndetection-io/sdk-dotnet-aspnetcore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <!-- Source Link writes the BUILD MACHINE's absolute paths into the symbol package, so a package
+       built anywhere but a runner would publish whatever directory tree it was built in. This maps
+       them to /_/ and makes the artifact reproducible at the same time. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- A FrameworkReference, not a PackageReference: ASP.NET Core ships with the runtime, so
+       depending on the package would pull a second, pinned copy into every consuming app. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VPNDetection" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
