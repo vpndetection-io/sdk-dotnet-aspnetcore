@@ -319,17 +319,22 @@ public class MiddlewareTests
                         });
                     }
                     app.UseVPNDetection(configure);
+                    // Serialized and written, rather than WriteAsJsonAsync: System.Text.Json
+                    // 10 demands PipeWriter.UnflushedBytes, which ASP.NET Core 8's TestServer
+                    // writer does not implement, so every test throws on the `latest` leg of
+                    // the matrix while passing on the floor.
                     app.Run(async context =>
                     {
                         Lookup? found = context.GetVPNDetection();
-                        await context.Response.WriteAsJsonAsync(new
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(new
                         {
                             attached = found is not null,
                             ip = found?.Ip,
                             is_vpn = found?.Result?.IsVpn,
                             is_bogon = found?.Result?.IsBogon,
                             error = found?.Error?.GetType().Name,
-                        });
+                        }));
                     });
                 }))
             .StartAsync();
