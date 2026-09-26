@@ -1,4 +1,4 @@
-# [<img src="https://s3.vpndetection.io/vpndetection-public/brand/mark.svg" alt="VPNDetection" width="24"/>](https://vpndetection.io/) VPNDetection ASP.NET Core Middleware
+# [<img src="https://s3.vpndetection.io/vpndetection-public/brand/mark.svg" alt="VPNDetection" height="28"/>](https://vpndetection.io/) VPNDetection ASP.NET Core Middleware
 
 [![NuGet](https://img.shields.io/nuget/v/VPNDetection.AspNetCore.svg)](https://www.nuget.org/packages/VPNDetection.AspNetCore)
 [![license](https://img.shields.io/github/license/vpndetection-io/sdk-dotnet-aspnetcore.svg)](LICENSE)
