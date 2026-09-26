@@ -5,7 +5,7 @@ using VPNDetection.Middleware;
 namespace VPNDetection.AspNetCore.Tests;
 
 /// <summary>
-/// The shared conformance corpus sdk/common generates into every SDK repo.
+/// The shared conformance corpus generated into every SDK repo.
 /// </summary>
 /// <remarks>
 /// It is language-neutral JSON, so a bound arrives as an object with gte/gt/lte/lt keys and an
