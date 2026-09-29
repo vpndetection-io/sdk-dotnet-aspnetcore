@@ -141,7 +141,7 @@ o.Skip = context => context.Request.Path.StartsWithSegments("/healthz");
 
 If you already hold a `VpnDetectionClient`, pass it as `Client` and the middleware will share it rather than building a second cache.
 
-Beyond a few million distinct visitors a day, stop calling the API per request: [download the dataset](https://vpndetection.io/databases) and look addresses up locally instead.
+Beyond a few million distinct visitors a day, stop calling the API per request: [download the dataset](https://vpndetection.io/#databases) and look addresses up locally instead.
 
 ## Absent is not false
 
