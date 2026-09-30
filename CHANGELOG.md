@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.7 - 2026-09-30
+
+### Fixes
+
+- Require VPNDetection 5.3.2: concurrent requests from one visitor share one lookup ([`5cd7dca`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/5cd7dcaf95b5f53e92dfd5e137cb9fdd8d8e08fa))
+
 ## 3.0.6 - 2026-09-29
 
 ### Fixes
