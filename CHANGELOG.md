@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.9 - 2026-10-05
+
+### Features
+
+- Require VPNDetection 5.4.0: the authorization code sign-in ([`04b3f3b`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/04b3f3bf6d183368c6b4bc8e5b913c96d54e938b))
+
 ## 3.0.8 - 2026-10-04
 
 ### Fixes
