@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.10 - 2026-10-10
+
+### Fixes
+
+- Require VPNDetection 5.4.1: the spec re-pinned to 2026.10.09 ([`da36643`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/da366434c7c454b19183f6163c8ed29a4df6d27e))
+
 ## 3.0.9 - 2026-10-05
 
 ### Features
