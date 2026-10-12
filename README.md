@@ -86,7 +86,7 @@ o.OnBlocked = (context, lookup) =>
 
 This is the setting that decides whether any of the above works, and it is the one thing only you can get right.
 
-By default the middleware uses `HttpContext.Connection.RemoteIpAddress`. **That is the socket peer** unless your pipeline has `UseForwardedHeaders`. If your app sits behind nginx, a load balancer, or a CDN, every visitor arrives wearing your proxy's address — which is a datacenter address, so a hosting rule would block all of them.
+By default the middleware uses `HttpContext.Connection.RemoteIpAddress`. **That is the socket peer** unless your pipeline has `UseForwardedHeaders`. If your app sits behind nginx, a load balancer, or a CDN, every visitor arrives wearing your proxy's address, and that is the address that gets checked: VPN visitors pass unnoticed, and if it is a hosting address, a hosting rule blocks everyone. nginx on the same machine is `127.0.0.1` and a load balancer usually has a private address, which the middleware answers locally without a lookup, flagging nobody and logging a warning.
 
 Either give ASP.NET Core the topology and let it resolve the address for you:
 
