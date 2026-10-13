@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.12 - 2026-10-13
+
+### Fixes
+
+- Require VPNDetection 5.4.3: OAuth answers it cannot read are retried ([`65cad8e`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/65cad8e9c829f6b903cdc6b2e7cbbb4bdf9928aa))
+
 ## 3.0.11 - 2026-10-13
 
 ### Fixes
