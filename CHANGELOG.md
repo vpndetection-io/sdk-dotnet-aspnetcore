@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.11 - 2026-10-13
+
+### Fixes
+
+- Require VPNDetection 5.4.2: unreadable answers, Retry-After and keys ([`b97d0f0`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/b97d0f011a13c578a1fbdddec3476206bff31805))
+
 ## 3.0.10 - 2026-10-10
 
 ### Fixes
