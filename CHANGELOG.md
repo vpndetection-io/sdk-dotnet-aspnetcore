@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.13 - 2026-10-16
+
+### Fixes
+
+- Require VPNDetection 5.4.4: a key outside ASCII is refused where it is set ([`3210756`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/3210756ad36d28a492d6b72571118a2d1a769595))
+
 ## 3.0.12 - 2026-10-13
 
 ### Fixes
