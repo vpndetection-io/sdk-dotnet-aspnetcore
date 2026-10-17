@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.14 - 2026-10-17
+
+### Features
+
+- Require VPNDetection 5.5.0: OauthMetadata carries registration_endpoint ([`38dd148`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/38dd1487c61cd7925e34f771249619b70b9392ec))
+
 ## 3.0.13 - 2026-10-16
 
 ### Fixes
