@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.15 - 2026-10-18
+
+### Fixes
+
+- Require VPNDetection 5.6.0: IsPubproxy and the pubproxy detail ([`c7b60cc`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/c7b60cc66cd35f6fcdcae99c2bebaa7ebb8adc88))
+
 ## 3.0.14 - 2026-10-17
 
 ### Features
