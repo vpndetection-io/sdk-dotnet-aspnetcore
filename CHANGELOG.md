@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.16 - 2026-10-19
+
+### Fixes
+
+- Require VPNDetection 5.7.0: num_ports and num_proxies in the pubproxy detail ([`f594183`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/f594183743b99d381356665117df8e4f882d2774))
+
 ## 3.0.15 - 2026-10-18
 
 ### Fixes
