@@ -17,7 +17,7 @@ dotnet add package VPNDetection.AspNetCore
 
 Targets `net8.0`, so it loads on .NET 8 and every later runtime.
 
-You need an API key. Create one in the [console](https://app.vpndetection.io); the free tier's allowance is counted per source address, and a server is a single source address, so a key is what makes this usable in production rather than optional.
+You need an API key. Create one in the [console](https://app.vpndetection.io); without one the allowance is counted per source address, and a server is a single source address, so a key is what makes this usable in production rather than optional.
 
 ```csharp
 using VPNDetection.AspNetCore;
@@ -145,7 +145,7 @@ Beyond a few million distinct visitors a day, stop calling the API per request: 
 
 ## Absent is not false
 
-Only `Ip` and `IsVpn` come back on every plan. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no".
+Without a key only `Ip` and `IsVpn` come back, and a free key adds Tor, relay, `Location` and `Asn`. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no".
 
 ```csharp
 found.Result.IsHosting == true   // when you only want the flag
