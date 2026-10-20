@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.17 - 2026-10-20
+
+### Fixes
+
+- Require VPNDetection 5.8.0: client_id_issued_at is 64-bit ([`b1bc07a`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/b1bc07a60f481a475a8ec7f14a8702d9ff1c8db0))
+
 ## 3.0.16 - 2026-10-19
 
 ### Fixes
