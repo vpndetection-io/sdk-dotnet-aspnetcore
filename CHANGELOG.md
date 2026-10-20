@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.18 - 2026-10-20
+
+### Features
+
+- Require VPNDetection 5.9.0: lookup results carry Location and Asn ([`ae9572d`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/ae9572d44d6f2e5f84e423b6e615fad885ac9a64))
+
 ## 3.0.17 - 2026-10-20
 
 ### Fixes
