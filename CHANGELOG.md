@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.19 - 2026-10-25
+
+### Fixes
+
+- Require VPNDetection 5.10.0: block conditions match on Location and Asn ([`ef5e699`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/ef5e699cee3e2e1e587b0fb6f27f31aefed4eb38))
+
 ## 3.0.18 - 2026-10-20
 
 ### Features
