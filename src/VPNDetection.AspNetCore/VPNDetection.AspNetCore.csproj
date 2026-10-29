@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="VPNDetection" Version="5.10.1" />
+    <PackageReference Include="VPNDetection" Version="5.10.2" />
   </ItemGroup>
 
   <ItemGroup>
