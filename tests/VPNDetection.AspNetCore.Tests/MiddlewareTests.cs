@@ -244,6 +244,36 @@ public class MiddlewareTests
         Assert.Empty(handler.Asked);
     }
 
+    // Built exactly as the README builds it, the key from configuration and nothing else, set and
+    // unset: every other test hands the middleware a client. The loopback peer is a bogon, so the
+    // answer is the middleware's own and nothing leaves the machine.
+    [Theory]
+    [InlineData("vd_example_key")]
+    [InlineData(null)]
+    public async Task TheReadmesSetupStartsAndAttachesAnAnswer(string? key)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Configuration["VPNDETECTION_API_KEY"] = key;
+        await using var app = builder.Build();
+        app.Use((context, next) =>
+        {
+            context.Connection.RemoteIpAddress = IPAddress.Loopback;
+            return next();
+        });
+
+        app.UseVPNDetection(o => o.ApiKey = builder.Configuration["VPNDETECTION_API_KEY"]);
+
+        app.MapGet("/", (HttpContext context) =>
+        {
+            var found = context.GetVPNDetection();
+            return found?.Result?.IsBogon == true ? "bogon" : "nothing attached";
+        });
+        await app.StartAsync();
+
+        Assert.Equal("bogon", await app.GetTestClient().GetStringAsync("/"));
+    }
+
     [Fact]
     public async Task AConditionThatConstrainsNothingIsRefusedWhenTheAppStarts()
     {
