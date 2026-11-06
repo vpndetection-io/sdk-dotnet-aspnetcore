@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.22 - 2026-11-06
+
+### Fixes
+
+- Require VPNDetection 5.10.3: the device poll asks nothing at its deadline ([`9032dfd`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/9032dfd0aa747a1419264096e3858f2c8fc8e89e))
+
 ## 3.0.21 - 2026-10-29
 
 ### Fixes
