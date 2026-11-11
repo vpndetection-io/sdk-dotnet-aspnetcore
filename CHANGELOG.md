@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.25 - 2026-11-11
+
+### Features
+
+- Require VPNDetection 5.12.2: the Unlimited tier and its terms ([`1d296b4`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/1d296b486d067115208501f527deb0edb5c7ced4))
+
 ## 3.0.24 - 2026-11-11
 
 ### Fixes
