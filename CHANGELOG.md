@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.24 - 2026-11-11
+
+### Fixes
+
+- Require VPNDetection 5.11.1: Retry-After read as sent, no null in an OAuth list ([`62b637f`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/62b637fab591dce05753c1a4e250b9300d396e8c))
+
 ## 3.0.23 - 2026-11-07
 
 ### Features
