@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.27 - 2026-11-11
+
+### Fixes
+
+- Require VPNDetection 5.13.1: the free plan's daily trial, never a trial key ([`c530363`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/c530363834f8068afb089768aa0bed199d06f6c1))
+
 ## 3.0.26 - 2026-11-11
 
 ### Features
