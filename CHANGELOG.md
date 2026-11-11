@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.26 - 2026-11-11
+
+### Features
+
+- Require VPNDetection 5.13.0: trial_expired on a trial key's answers ([`7b75f89`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/7b75f893a15c5e996415c314c472dd1a42f268e3))
+
 ## 3.0.25 - 2026-11-11
 
 ### Features
