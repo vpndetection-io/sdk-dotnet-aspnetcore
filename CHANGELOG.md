@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 3.0.29 - 2026-11-15
+
+### Fixes
+
+- Require VPNDetection 5.14.0: is_bogon on every answer, and provider_name beside each provider ([`69ebd65`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/69ebd65fef071563c509a9b9a4287b00f2d1e160))
+
 ## 3.0.28 - 2026-11-11
 
 ### Fixes
