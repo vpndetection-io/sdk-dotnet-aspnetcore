@@ -3,6 +3,8 @@ using System.Text.Json;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -274,6 +276,44 @@ public class MiddlewareTests
         Assert.Equal("bogon", await app.GetTestClient().GetStringAsync("/"));
     }
 
+    // The README's setup again, from a PUBLIC peer with a forged X-Forwarded-For, the lookup
+    // answered by a recording API: a middleware that dropped the key, or read the header by
+    // default, would pass the test above, since a loopback peer is answered with no request.
+    [Theory]
+    [InlineData("vd_example_key", "Bearer vd_example_key")]
+    [InlineData(null, null)]
+    public async Task TheReadmesKeyReachesTheApiForAPublicPeer(string? key, string? sent)
+    {
+        await using var api = await RecordingApi.StartAsync();
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Configuration["VPNDETECTION_API_KEY"] = key;
+        await using var app = builder.Build();
+        app.Use((context, next) =>
+        {
+            context.Connection.RemoteIpAddress = IPAddress.Parse(PublicIp);
+            return next();
+        });
+
+        app.UseVPNDetection(o =>
+        {
+            o.ApiKey = builder.Configuration["VPNDETECTION_API_KEY"];
+            o.BaseUrl = api.BaseUrl;
+        });
+
+        app.MapGet("/", (HttpContext context) =>
+            context.GetVPNDetection()?.Result?.Ip ?? "nothing attached");
+        await app.StartAsync();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.TryAddWithoutValidation("X-Forwarded-For", "1.1.1.1");
+        var answer = await app.GetTestClient().SendAsync(request);
+
+        Assert.Equal(PublicIp, await answer.Content.ReadAsStringAsync());
+        Assert.Equal(new[] { $"/{PublicIp}" }, api.Asked);
+        Assert.Equal(new[] { sent }, api.Authorizations);
+    }
+
     [Fact]
     public async Task AConditionThatConstrainsNothingIsRefusedWhenTheAppStarts()
     {
@@ -381,5 +421,67 @@ public class MiddlewareTests
         }
         var answer = await host.GetTestClient().SendAsync(request);
         return JsonDocument.Parse(await answer.Content.ReadAsStringAsync()).RootElement.Clone();
+    }
+
+    /// <summary>
+    /// A stand-in API on a real socket, answering every lookup and recording the path and the
+    /// Authorization header of each request.
+    /// </summary>
+    private sealed class RecordingApi : IAsyncDisposable
+    {
+        private readonly WebApplication app;
+        private readonly List<string> asked = new();
+        private readonly List<string?> authorizations = new();
+
+        private RecordingApi(WebApplication app) => this.app = app;
+
+        internal string BaseUrl => app.Services.GetRequiredService<IServer>()
+            .Features.Get<IServerAddressesFeature>()!.Addresses.Single();
+
+        internal IReadOnlyList<string> Asked
+        {
+            get
+            {
+                lock (asked)
+                {
+                    return asked.ToArray();
+                }
+            }
+        }
+
+        internal IReadOnlyList<string?> Authorizations
+        {
+            get
+            {
+                lock (asked)
+                {
+                    return authorizations.ToArray();
+                }
+            }
+        }
+
+        internal static async Task<RecordingApi> StartAsync()
+        {
+            var builder = WebApplication.CreateBuilder();
+            builder.WebHost.UseUrls("http://127.0.0.1:0");
+            var app = builder.Build();
+            var api = new RecordingApi(app);
+            app.Run(async context =>
+            {
+                var path = context.Request.Path.Value!;
+                lock (api.asked)
+                {
+                    api.asked.Add(path);
+                    api.authorizations.Add(context.Request.Headers.Authorization.FirstOrDefault());
+                }
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(
+                    Stub.Lookup().Replace("$IP", path.TrimStart('/'), StringComparison.Ordinal));
+            });
+            await app.StartAsync();
+            return api;
+        }
+
+        public ValueTask DisposeAsync() => app.DisposeAsync();
     }
 }
