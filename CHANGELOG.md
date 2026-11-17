@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.0.0 - 2026-11-17
+
+### Breaking changes
+
+- Require VPNDetection 6.0.0: a tier, standing, format or outcome the API adds reads ([`336fcd9`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/336fcd9c029a89e0778ec209f480891c09f61af0))
+
 ## 3.0.31 - 2026-11-16
 
 ### Fixes
