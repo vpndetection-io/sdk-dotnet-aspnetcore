@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.0.1 - 2026-11-18
+
+### Fixes
+
+- Require VPNDetection 6.1.0: cap_reached past a paid plan's overage cap ([`45ba995`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/45ba9959fedc626317e0bc454b743d959dd6e5ca))
+
 ## 4.0.0 - 2026-11-17
 
 ### Breaking changes
