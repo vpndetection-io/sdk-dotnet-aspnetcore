@@ -102,6 +102,34 @@ public class MiddlewareTests
             (await cased.GetTestClient().GetAsync("/")).StatusCode);
     }
 
+    // A condition on a member from VPNDetection 6.2.1 on: the carrier behind an address, through
+    // the pipeline, matched and refused, and one naming another carrier passed.
+    [Fact]
+    public async Task AConditionReachesTheNetworkMembers()
+    {
+        const string carrier = ""","is_carrier":true,"carrier":{"name":"T-Mobile US","mcc":"310"}""";
+        var (tmobile, _) = Stub.Serving(Stub.Lookup(isVpn: false, extra: carrier));
+        using var blocked = await Host(o =>
+        {
+            o.Client = tmobile;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[]
+            {
+                new Condition { ["is_carrier"] = true, ["carrier"] = new Condition { ["mcc"] = "310" } },
+            };
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, (await blocked.GetTestClient().GetAsync("/")).StatusCode);
+
+        var (again, _) = Stub.Serving(Stub.Lookup(isVpn: false, extra: carrier));
+        using var passed = await Host(o =>
+        {
+            o.Client = again;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["carrier"] = new Condition { ["mcc"] = "234" } } };
+        });
+        Assert.Equal(HttpStatusCode.OK, (await passed.GetTestClient().GetAsync("/")).StatusCode);
+    }
+
     [Fact]
     public async Task OnBlockedReplacesTheRefusal()
     {
