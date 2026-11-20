@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.0.3 - 2026-11-20
+
+### Features
+
+- Require VPNDetection 6.2.1: an answer's new members, in a block condition too ([`c1dd9d6`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/c1dd9d6e71bdcd7b33fa8613cc5fc007712537c0))
+
 ## 4.0.2 - 2026-11-19
 
 ### Fixes
