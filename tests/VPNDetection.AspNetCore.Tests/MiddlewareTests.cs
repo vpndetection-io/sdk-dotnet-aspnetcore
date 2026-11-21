@@ -166,6 +166,11 @@ public class MiddlewareTests
         var body = await Json(host, "/healthz");
         Assert.False(body.GetProperty("attached").GetBoolean());
         Assert.Empty(handler.Asked);
+
+        // The same app refuses a path it does not skip, or this test would pass unmounted.
+        var refused = await host.GetTestClient().GetAsync("/");
+        Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        Assert.Equal(new[] { PublicIp }, handler.Asked);
     }
 
     [Fact]
@@ -272,6 +277,10 @@ public class MiddlewareTests
         var answer = await host.GetTestClient().GetAsync("/");
         Assert.Equal(HttpStatusCode.OK, answer.StatusCode);
         Assert.Empty(handler.Asked);
+        // Answered by the middleware itself, or this test would pass unmounted.
+        var body = JsonDocument.Parse(await answer.Content.ReadAsStringAsync()).RootElement;
+        Assert.True(body.GetProperty("attached").GetBoolean());
+        Assert.True(body.GetProperty("is_bogon").GetBoolean());
     }
 
     // Built exactly as the README builds it, the key from configuration and nothing else, set and
@@ -377,6 +386,14 @@ public class MiddlewareTests
         Assert.Equal(
             expect.GetProperty("blocked").GetBoolean() ? HttpStatusCode.Forbidden : HttpStatusCode.OK,
             answer.StatusCode);
+        if (answer.StatusCode == HttpStatusCode.OK)
+        {
+            // A request let through carries the answer the condition was judged on: without this,
+            // every case expecting no block would pass with the middleware removed.
+            var attached = JsonDocument.Parse(await answer.Content.ReadAsStringAsync()).RootElement;
+            Assert.True(attached.GetProperty("attached").GetBoolean());
+            Assert.Equal(ip, attached.GetProperty("ip").GetString());
+        }
 
         var missing = expect.GetProperty("missing").EnumerateArray().Select(m => m.GetString()!).ToList();
         var reported = warnings.Where(w => w.Contains("does not include", StringComparison.Ordinal)).ToList();
