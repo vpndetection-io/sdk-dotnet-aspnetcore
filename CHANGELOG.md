@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.0.4 - 2026-11-21
+
+### Fixes
+
+- Require VPNDetection 6.2.2: a batch entry that cannot be read fails only its own address ([`cc019d2`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/cc019d2bf99c66050d3884e878d9962c02d14dcd))
+
 ## 4.0.3 - 2026-11-20
 
 ### Features
