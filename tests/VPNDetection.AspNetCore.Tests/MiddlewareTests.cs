@@ -130,6 +130,30 @@ public class MiddlewareTests
         Assert.Equal(HttpStatusCode.OK, (await passed.GetTestClient().GetAsync("/")).StatusCode);
     }
 
+    // A condition on the bot flag from VPNDetection 6.3.0 on, through the pipeline: a bot's public
+    // address refused, and another visitor's passed.
+    [Fact]
+    public async Task AConditionOnIsBotBlocksABotAndPassesAVisitor()
+    {
+        var (bot, _) = Stub.Serving(Stub.Lookup(isVpn: false, extra: ""","is_bot":true,"bot":{"provider":"google","verified":true}"""));
+        using var blocked = await Host(o =>
+        {
+            o.Client = bot;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["is_bot"] = true } };
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, (await blocked.GetTestClient().GetAsync("/")).StatusCode);
+
+        var (visitor, _) = Stub.Serving(Stub.Lookup(isVpn: false, extra: ""","is_bot":false,"bot":{}"""));
+        using var passed = await Host(o =>
+        {
+            o.Client = visitor;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["is_bot"] = true } };
+        });
+        Assert.Equal(HttpStatusCode.OK, (await passed.GetTestClient().GetAsync("/")).StatusCode);
+    }
+
     [Fact]
     public async Task OnBlockedReplacesTheRefusal()
     {
