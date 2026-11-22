@@ -17,7 +17,7 @@ dotnet add package VPNDetection.AspNetCore
 
 Targets `net8.0`, so it loads on .NET 8 and every later runtime.
 
-No API key needed to start. Without one, a lookup is on Unlimited, the free plan, which answers VPN, Tor and relay detection with no daily or monthly cap. A paid plan's key adds the hosting, CDN and proxy flags and the provider behind each flag: create one in the [console](https://app.vpndetection.io). A free account tries every field.
+No API key needed to start. Without one, a lookup is on Unlimited, the free plan, which answers VPN, Tor and relay detection and whether a bot uses the address (`is_bot`), with no daily or monthly cap. A paid plan's key adds the hosting, CDN and proxy flags, the provider behind each flag and whose bot it is (`bot`): create one in the [console](https://app.vpndetection.io). A free account tries every field.
 
 ```csharp
 using VPNDetection.AspNetCore;
@@ -61,6 +61,9 @@ new Condition { ["resproxy"] = new Condition { ["hits"] = Bound.Gte(5) } }
 
 // any of these
 new Condition { ["vpn"] = new Condition { ["confidence"] = new[] { "high", "medium" } } }
+
+// bots: name the flag, since a term inside a list such as bot's agents or categories never matches
+new Condition { ["is_bot"] = true }
 
 // a list is OR
 new[]
@@ -145,7 +148,7 @@ Beyond a few million distinct visitors a day, stop calling the API per request: 
 
 ## Absent is not false
 
-Unlimited, with a key or without one, leaves out `IsHosting`, `IsCdn`, the four proxy flags, the seven network and service flags from `IsCarrier` to `IsBittorrent`, `Company` and `Abuse`, and of the detail behind each flag it answers only Tor's and relay's. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no".
+Unlimited, with a key or without one, leaves out `IsHosting`, `IsCdn`, the four proxy flags, the seven network and service flags from `IsCarrier` to `IsBittorrent`, `Bot`, `Company` and `Abuse`, and of the detail behind each flag it answers only Tor's and relay's. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no".
 
 ```csharp
 found.Result.IsHosting == true   // when you only want the flag
