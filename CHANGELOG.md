@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.0.5 - 2026-11-22
+
+### Fixes
+
+- Require VPNDetection 6.3.0: is_bot and bot, and an answer missing the AS's country or RPKI status refused ([`4e4b1d4`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/4e4b1d4c1aba64a1d1f03238f5bfc8da834d5006))
+
 ## 4.0.4 - 2026-11-21
 
 ### Fixes
