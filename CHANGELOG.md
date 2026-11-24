@@ -2,6 +2,13 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.1.0 - 2026-11-24
+
+### Features
+
+- Require VPNDetection 6.4.0: a visitor's user agent, AllowBots, and first_seen and last_seen read as days ([`962d5c4`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/962d5c462917b4191798d2a1e6f2ef796c337227))
+- AllowBots lets a verified crawler through ([`a889b1d`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/a889b1de19c472693cffe84428aeed9cd0323c51))
+
 ## 4.0.5 - 2026-11-22
 
 ### Fixes
