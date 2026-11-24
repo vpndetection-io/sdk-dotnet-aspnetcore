@@ -9,7 +9,8 @@ namespace VPNDetection.AspNetCore;
 /// <summary>How the ASP.NET Core middleware behaves.</summary>
 /// <remarks>
 /// Everything <see cref="MiddlewareOptions{TRequest}"/> has, plus how a blocked request is
-/// answered.
+/// answered. <see cref="MiddlewareOptions{TRequest}.AllowBots"/> sends each request's own
+/// <c>User-Agent</c> header with its lookup.
 /// </remarks>
 public sealed class VPNDetectionOptions : MiddlewareOptions<HttpContext>
 {
@@ -50,8 +51,10 @@ public sealed class VPNDetectionMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // RequestAborted, so a visitor who hangs up does not hold a lookup open behind them.
-        Lookup? found = await core.EvaluateAsync(context, context.RequestAborted)
+        // RequestAborted, so a visitor who hangs up does not hold a lookup open behind them. The
+        // request's own User-Agent goes to the core, which sends it only with AllowBots on.
+        Lookup? found = await core.EvaluateAsync(
+                context, context.Request.Headers.UserAgent.ToString(), context.RequestAborted)
             .ConfigureAwait(false);
         if (found is null)
         {
