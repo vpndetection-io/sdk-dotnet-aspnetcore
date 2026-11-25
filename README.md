@@ -98,7 +98,7 @@ app.UseVPNDetection(o =>
 });
 ```
 
-The verdict is on the answer as `user_agent` (`lookup.Result.UserAgent`: the agent it names, its kind, and `Verified`, `Spoofed`, `Unverifiable` or `NotBot`), so with `AllowBots` on a condition can refuse a forged crawler: `new Condition { ["user_agent"] = new Condition { ["verdict"] = "spoofed" } }`. A request with no `User-Agent` sends none. It is off by default, which keeps one cached answer per address rather than one per agent. Without a key, or on a free key past its trial, no answer carries a verdict, so nothing is let through and `OnMissingField` says so once.
+The verdict is on the answer as `user_agent` (`lookup.Result.UserAgent`: the agent it names, its kind, and `Verified`, `Spoofed`, `Unverifiable` or `Not_bot`), so with `AllowBots` on a condition can refuse a forged crawler: `new Condition { ["user_agent"] = new Condition { ["verdict"] = "spoofed" } }`. A request with no `User-Agent` sends none. It is off by default, which keeps one cached answer per address rather than one per agent. Without a key, or on a free key past its trial, no answer carries a verdict, so nothing is let through and `OnMissingField` says so once.
 
 ## Where the client address comes from
 
