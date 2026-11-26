@@ -2,6 +2,16 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.1.3 - 2026-11-26
+
+### Features
+
+- Require VPNDetection 6.6.0: AllowBots sends only a crawler's User-Agent, at most four an address ([`9a8ce44`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/9a8ce447f809f2a37bab731951d612c1cde1608e))
+
+### Fixes
+
+- README: the verdict for a browser or script is Verdict.Not_bot ([`ee4c948`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/ee4c9483eb84206d619cc434472941286b4b3df7))
+
 ## 4.1.2 - 2026-11-25
 
 ### Fixes
