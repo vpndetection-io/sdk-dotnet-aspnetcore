@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.1.4 - 2026-11-26
+
+### Fixes
+
+- Require VPNDetection 6.6.1: a condition on the verdict is no plan gap for a request that sent no agent ([`12731df`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/12731df808c5cee6df27830096baae7f1d2c9fd0))
+
 ## 4.1.3 - 2026-11-26
 
 ### Features
