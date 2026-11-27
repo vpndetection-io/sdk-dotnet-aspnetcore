@@ -56,6 +56,22 @@ public class AllowBotsTests
         Assert.Equal(new string?[] { null }, api.Agents);
     }
 
+    // A keyless client is answered no verdict, no bot flag and no AS type, so a crawler gets no pass
+    // and the middleware says so once: the answer is read all the same, and refuses the VPN.
+    [Fact]
+    public async Task AKeylessAppGetsNoBotPassAndSaysSo()
+    {
+        await using var api = await AgentApi.StartAsync(null);
+        var warnings = new List<string>();
+        await using var app = await App(api, allowBots: true, key: null, warnings);
+
+        var answer = await Send(app, Googlebot);
+
+        Assert.Equal(HttpStatusCode.Forbidden, answer.StatusCode);
+        Assert.Equal(new string?[] { Googlebot }, api.Agents);
+        Assert.Contains("no crawler is let through", Assert.Single(warnings), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task AnAbsentHeaderSendsNone()
     {
@@ -83,7 +99,8 @@ public class AllowBotsTests
     }
 
     // The README's setup, AllowBots set, refusing every VPN.
-    private static async Task<WebApplication> App(AgentApi api, bool allowBots)
+    private static async Task<WebApplication> App(
+        AgentApi api, bool allowBots, string? key = "vd_example_key", List<string>? warnings = null)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -95,9 +112,13 @@ public class AllowBotsTests
         });
         app.UseVPNDetection(o =>
         {
-            o.ApiKey = "vd_example_key";
+            o.ApiKey = key;
             o.BaseUrl = api.BaseUrl;
             o.AllowBots = allowBots;
+            if (warnings is not null)
+            {
+                o.OnWarn = warnings.Add;
+            }
             o.BlockCondition = new[] { new Condition { ["is_vpn"] = true } };
         });
         app.MapGet("/", (HttpContext context) =>
@@ -130,7 +151,8 @@ public class AllowBotsTests
             }
         }
 
-        internal static async Task<AgentApi> StartAsync(string verdict)
+        // A null verdict is a keyless client's answer: no verdict, no bot flag and no AS type.
+        internal static async Task<AgentApi> StartAsync(string? verdict)
         {
             var builder = WebApplication.CreateBuilder();
             builder.WebHost.UseUrls("http://127.0.0.1:0");
@@ -144,9 +166,17 @@ public class AllowBotsTests
                     api.agents.Add(agent);
                 }
                 var answer = new JsonObject { ["ip"] = context.Request.Path.Value!.TrimStart('/'), ["is_vpn"] = true };
-                if (agent is not null)
+                if (agent is not null && verdict is not null)
                 {
                     answer["user_agent"] = new JsonObject { ["agent"] = "Googlebot", ["kind"] = "bot", ["verdict"] = verdict };
+                }
+                if (verdict is null)
+                {
+                    answer["asn"] = new JsonObject
+                    {
+                        ["asn"] = 9009, ["name"] = "M247 Europe SRL", ["domain"] = "m247global.com",
+                        ["prefix"] = "146.70.116.0/24", ["country"] = "RO", ["rpki_status"] = "valid",
+                    };
                 }
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(answer.ToJsonString());

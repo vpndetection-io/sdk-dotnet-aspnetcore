@@ -154,6 +154,73 @@ public class MiddlewareTests
         Assert.Equal(HttpStatusCode.OK, (await passed.GetTestClient().GetAsync("/")).StatusCode);
     }
 
+    // The AS's type and the bot flag are a paid plan's: a keyless answer carries neither. The
+    // middleware reads that answer, never matches a term on either, attaches it and reports each by
+    // its path, so a condition that can never fire says so once instead of passing in silence.
+    private const string KeylessAsn =
+        ""","asn":{"asn":9009,"name":"M247 Europe SRL","domain":"m247global.com","prefix":"146.70.116.0/24","country":"RO","rpki_status":"valid"}""";
+
+    [Fact]
+    public async Task AConditionOnTheAsTypeNeverBlocksAKeylessAnswerAndIsReportedByItsPath()
+    {
+        var (keyless, _) = Stub.Serving(Stub.Lookup(isVpn: true, extra: KeylessAsn));
+        var warnings = new List<string>();
+        using var host = await Host(o =>
+        {
+            o.Client = keyless;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["asn"] = new Condition { ["type"] = "hosting" } } };
+            o.OnWarn = warnings.Add;
+        });
+
+        var body = await Json(host, "/");
+
+        Assert.True(body.GetProperty("attached").GetBoolean());
+        Assert.True(body.GetProperty("is_vpn").GetBoolean());
+        Assert.Equal(JsonValueKind.Null, body.GetProperty("error").ValueKind);
+        var warning = Assert.Single(warnings);
+        Assert.Contains("asn.type", warning, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AConditionOnTheAsTypeBlocksWhereTheAnswerCarriesIt()
+    {
+        var (paid, _) = Stub.Serving(Stub.Lookup(
+            isVpn: true,
+            extra: KeylessAsn.Replace(""","domain":"m247global.com",""", ""","domain":"m247global.com","type":"hosting",""", StringComparison.Ordinal)));
+        var warnings = new List<string>();
+        using var host = await Host(o =>
+        {
+            o.Client = paid;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["asn"] = new Condition { ["type"] = "hosting" } } };
+            o.OnWarn = warnings.Add;
+        });
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await host.GetTestClient().GetAsync("/")).StatusCode);
+        Assert.Empty(warnings);
+    }
+
+    [Fact]
+    public async Task AConditionOnIsBotNeverBlocksAKeylessAnswerAndIsReportedMissing()
+    {
+        var (keyless, _) = Stub.Serving(Stub.Lookup(isVpn: false, extra: KeylessAsn));
+        var warnings = new List<string>();
+        using var host = await Host(o =>
+        {
+            o.Client = keyless;
+            o.IpSelector = _ => PublicIp;
+            o.BlockCondition = new[] { new Condition { ["is_bot"] = true } };
+            o.OnWarn = warnings.Add;
+        });
+
+        var body = await Json(host, "/");
+
+        Assert.True(body.GetProperty("attached").GetBoolean());
+        Assert.Equal(PublicIp, body.GetProperty("ip").GetString());
+        Assert.Contains("is_bot", Assert.Single(warnings), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task OnBlockedReplacesTheRefusal()
     {
