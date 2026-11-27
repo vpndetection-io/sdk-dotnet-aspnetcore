@@ -2,6 +2,16 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff. Releases before 3.0.4 are described by their release commits.
 
+## 4.1.5 - 2026-11-27
+
+### Features
+
+- Require VPNDetection 6.7.0: a keyless answer without the AS's type reads ([`6f9f23a`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/6f9f23aca812140c11e91803fc5f900f69d08aae))
+
+### Fixes
+
+- README: a keyless app has no bot flag, AS type or bot pass ([`ce646d9`](https://github.com/vpndetection-io/sdk-dotnet-aspnetcore/commit/ce646d9df70c8c4528c972e0adecc0d79eaaba03))
+
 ## 4.1.4 - 2026-11-26
 
 ### Fixes

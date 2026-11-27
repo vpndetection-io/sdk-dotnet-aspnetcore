@@ -16,7 +16,7 @@
 
   <PropertyGroup>
     <PackageId>VPNDetection.AspNetCore</PackageId>
-    <Version>4.1.4</Version>
+    <Version>4.1.5</Version>
     <Authors>Mslm Dev</Authors>
     <Company>Mslm Dev</Company>
     <Product>VPNDetection</Product>
