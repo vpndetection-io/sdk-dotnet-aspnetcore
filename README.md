@@ -17,7 +17,7 @@ dotnet add package VPNDetection.AspNetCore
 
 Targets `net8.0`, so it loads on .NET 8 and every later runtime.
 
-No API key needed to start. Without one, a lookup is on Unlimited, the free plan, which answers VPN, Tor and relay detection and whether a bot uses the address (`is_bot`), with no daily or monthly cap. A paid plan's key adds the hosting, CDN and proxy flags, the provider behind each flag and whose bot it is (`bot`): create one in the [console](https://app.vpndetection.io). A free account tries every field.
+No API key needed to start. Without one, a lookup is on Unlimited, the free plan, which answers VPN, Tor and relay detection, with no daily or monthly cap. A paid plan's key adds the hosting, CDN and proxy flags, the provider behind each flag, whether a bot uses the address (`is_bot`), whose bot it is (`bot`) and the AS's type: create one in the [console](https://app.vpndetection.io). A free account tries every field.
 
 ```csharp
 using VPNDetection.AspNetCore;
@@ -73,7 +73,7 @@ new[]
 }
 ```
 
-Values are matched by equality, strings without regard to case. An array means any-of. A term on a member the answer holds as a list, such as `pubproxy`'s `protocols` or the `web` rows, matches when any one element does: `new Condition { ["web"] = new Condition { ["port"] = 443 } }` blocks an address with a web server on port 443, and every member of an object term must hold on the same row. `Bound.Gte`, `Gt`, `Lte` and `Lt` compare numbers and chain into a range (`Bound.Gte(5).AndLt(100)`); every bound you give must hold. Members set to `false` or `null` are ignored, so a condition states the signals you act on; one that constrains nothing would match every request, and is refused when the app starts rather than silently blocking all your traffic.
+Values are matched by equality, strings without regard to case. An array means any-of. A term on a member the answer holds as a list, such as `pubproxy`'s `protocols` or the `web` rows, matches when any one element does: `new Condition { ["web"] = new Condition { ["port"] = 443 } }` blocks an address with a web server on port 443, and every member of an object term must hold on the same row. `Bound.Gte`, `Gt`, `Lte` and `Lt` compare numbers and chain into a range (`Bound.Gte(5).AndLt(100)`); every bound you give must hold. A condition on `is_bot` or `asn.type` needs a paid plan's key: without one the answer lacks the member, so the term never matches and `OnMissingField` reports it by its path. Members set to `false` or `null` are ignored, so a condition states the signals you act on; one that constrains nothing would match every request, and is refused when the app starts rather than silently blocking all your traffic.
 
 Replace the refusal with `OnBlocked`:
 
@@ -98,7 +98,7 @@ app.UseVPNDetection(o =>
 });
 ```
 
-The verdict is on the answer as `user_agent` (`lookup.Result.UserAgent`: the agent it names, its kind, and `Verified`, `Spoofed`, `Unverifiable` or `Not_bot`), so with `AllowBots` on a condition can refuse a forged crawler: `new Condition { ["user_agent"] = new Condition { ["verdict"] = "spoofed" } }`. Any other agent, or none, is not sent, since its verdict could only be `Not_bot`. One address is looked up with at most four crawler agents an hour: past those its lookup sends none, and a request passes as a crawler only where the answer's `Bot.Verified` is true. It is off by default, which keeps one cached answer per address rather than one per agent. Without a key, or on a free key past its trial, no answer carries a verdict, so nothing is let through and `OnMissingField` says so once.
+The verdict is on the answer as `user_agent` (`lookup.Result.UserAgent`: the agent it names, its kind, and `Verified`, `Spoofed`, `Unverifiable` or `Not_bot`), so with `AllowBots` on a condition can refuse a forged crawler: `new Condition { ["user_agent"] = new Condition { ["verdict"] = "spoofed" } }`. Any other agent, or none, is not sent, since its verdict could only be `Not_bot`. One address is looked up with at most four crawler agents an hour: past those its lookup sends none, and a request passes as a crawler only where the answer's `Bot.Verified` is true. It is off by default, which keeps one cached answer per address rather than one per agent. `AllowBots` reads the verdict, a paid plan's member, so an app without a key, or on a free key past its trial, gets no bot pass: no answer carries a verdict, nothing is let through and `OnMissingField` says so once.
 
 ## Where the client address comes from
 
@@ -163,7 +163,7 @@ Beyond a few million distinct visitors a day, stop calling the API per request: 
 
 ## Absent is not false
 
-Unlimited, with a key or without one, leaves out `IsHosting`, `IsCdn`, the four proxy flags, the seven network and service flags from `IsCarrier` to `IsBittorrent`, `Bot`, `Company` and `Abuse`, and of the detail behind each flag it answers only Tor's and relay's. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no".
+Unlimited, with a key or without one, leaves out `IsHosting`, `IsCdn`, the four proxy flags, the seven network and service flags from `IsCarrier` to `IsBittorrent`, `IsBot`, `Bot`, `Company`, `Abuse` and the AS's `Type`, and of the detail behind each flag it answers only Tor's and relay's. A field your plan does not include is `null`, which means "not in your plan" rather than "checked, and no". `Asn.Type` is a `string`, so an answer without it reads an empty string.
 
 ```csharp
 found.Result.IsHosting == true   // when you only want the flag
