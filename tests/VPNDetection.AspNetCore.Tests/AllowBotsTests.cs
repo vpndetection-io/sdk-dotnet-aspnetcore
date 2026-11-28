@@ -16,9 +16,10 @@ using Xunit;
 namespace VPNDetection.AspNetCore.Tests;
 
 /// <summary>
-/// <c>AllowBots</c> built the way the README builds it, from a PUBLIC peer, against a recording API
-/// that answers the peer as a VPN with the verdict it names for the agent that arrived: the agent
-/// it records is the request's own, so a middleware sending none, or another, fails.
+/// <c>AllowBots</c> built the way the README builds it, from a PUBLIC peer unless a test names a
+/// bogon, against a recording API that answers the peer as a VPN with the verdict it names for the
+/// agent that arrived: the agent it records is the request's own, so a middleware sending none, or
+/// another, fails.
 /// </summary>
 public class AllowBotsTests
 {
@@ -84,6 +85,33 @@ public class AllowBotsTests
         Assert.Equal(new string?[] { null }, api.Agents);
     }
 
+    // A bogon peer, local development behind no proxy, is answered locally and carries no verdict,
+    // and that is no plan gap: OnMissingField set to Throw answered a crawler's request there with a
+    // 500, and Warn logged "your plan does not include" for it. Nothing reaches the API either.
+    [Theory]
+    [InlineData("127.0.0.1", true)]
+    [InlineData("127.0.0.1", false)]
+    [InlineData("10.0.0.1", true)]
+    [InlineData("10.0.0.1", false)]
+    [InlineData("::1", true)]
+    [InlineData("::1", false)]
+    public async Task ABogonPeerWithACrawlerAgentIsNoPlanGap(string peer, bool throws)
+    {
+        await using var api = await AgentApi.StartAsync("spoofed");
+        var warnings = new List<string>();
+        await using var app = await App(
+            api, allowBots: true, warnings: warnings, peer: peer,
+            condition: new Condition { ["user_agent"] = new Condition { ["verdict"] = "spoofed" } },
+            onMissing: throws ? MiddlewareOptions<HttpContext>.MissingField.Throw : MiddlewareOptions<HttpContext>.MissingField.Warn);
+
+        var answer = await Send(app, Googlebot);
+
+        Assert.Equal(HttpStatusCode.OK, answer.StatusCode);
+        Assert.Equal($"{peer} ", await answer.Content.ReadAsStringAsync());
+        Assert.Empty(api.Agents);
+        Assert.DoesNotContain(warnings, message => message.Contains("does not include", StringComparison.Ordinal));
+    }
+
     private static async Task<HttpResponseMessage> Send(WebApplication app, string? agent)
     {
         var client = app.GetTestClient();
@@ -98,16 +126,18 @@ public class AllowBotsTests
         return await client.SendAsync(request);
     }
 
-    // The README's setup, AllowBots set, refusing every VPN.
+    // The README's setup, AllowBots set, refusing every VPN or the condition a test names.
     private static async Task<WebApplication> App(
-        AgentApi api, bool allowBots, string? key = "vd_example_key", List<string>? warnings = null)
+        AgentApi api, bool allowBots, string? key = "vd_example_key", List<string>? warnings = null,
+        string peer = PublicIp, Condition? condition = null,
+        MiddlewareOptions<HttpContext>.MissingField onMissing = MiddlewareOptions<HttpContext>.MissingField.Warn)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         var app = builder.Build();
         app.Use((context, next) =>
         {
-            context.Connection.RemoteIpAddress = IPAddress.Parse(PublicIp);
+            context.Connection.RemoteIpAddress = IPAddress.Parse(peer);
             return next();
         });
         app.UseVPNDetection(o =>
@@ -115,11 +145,12 @@ public class AllowBotsTests
             o.ApiKey = key;
             o.BaseUrl = api.BaseUrl;
             o.AllowBots = allowBots;
+            o.OnMissingField = onMissing;
             if (warnings is not null)
             {
                 o.OnWarn = warnings.Add;
             }
-            o.BlockCondition = new[] { new Condition { ["is_vpn"] = true } };
+            o.BlockCondition = new[] { condition ?? new Condition { ["is_vpn"] = true } };
         });
         app.MapGet("/", (HttpContext context) =>
         {
